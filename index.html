@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free QR Code Generator | Online Tool</title>
-    <meta name="description" content="Free online QR code generator. Create and download QR codes quickly for URL, text and more.">
+    <title>免费二维码生成器</title>
+    <meta name="description" content="免费在线二维码生成器，快速生成并下载二维码">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QRCode 库 -->
@@ -12,13 +12,13 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center py-10 px-4">
     <div class="w-full max-w-xl bg-white rounded-xl shadow-md p-6">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Free QR Code Generator</h1>
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">免费二维码生成器</h1>
         
         <!-- 输入区域 -->
         <input 
             type="text" 
             id="content" 
-            placeholder="Enter URL or text..."
+            placeholder="输入网址或文本……"
             class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
 
@@ -27,7 +27,7 @@
             onclick="generateQR()"
             class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
         >
-            Generate QR Code
+            生成二维码
         </button>
 
         <!-- 二维码展示区 -->
@@ -40,18 +40,24 @@
             download="qrcode.png"
             class="hidden block text-center mt-4 text-blue-500 hover:underline"
         >
-            Download QR Code
+            下载二维码
         </a>
     </div>
 
     <!-- 底部 -->
     <footer class="mt-8 text-gray-500 text-sm text-center">
-        © 2025 Free Online Tools. All rights reserved.
+        © 2025年免费在线工具。版权所有。
     </footer>
 
     <script>
+        // 确保 DOM 加载完成后再绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('button');
+            button.addEventListener('click', generateQR);
+        });
+
         function generateQR() {
-            const text = document.getElementById('content').value;
+            const text = document.getElementById('content').value.trim();
             const qrBox = document.getElementById('qrcode');
             const downloadBtn = document.getElementById('downloadBtn');
             
@@ -59,11 +65,18 @@
             qrBox.innerHTML = '';
             downloadBtn.classList.add('hidden');
 
-            if(!text) return alert('Please enter content first');
+            if(!text) {
+                alert('请先输入内容');
+                return;
+            }
 
             // 生成二维码
             QRCode.toCanvas(qrBox, text, { width: 200 }, function (error) {
-                if (error) console.error(error)
+                if (error) {
+                    console.error('生成二维码出错:', error);
+                    alert('生成失败，请检查输入内容或网络连接');
+                    return;
+                }
                 // 生成下载链接
                 const canvas = qrBox.querySelector('canvas');
                 downloadBtn.href = canvas.toDataURL("image/png");
