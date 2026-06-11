@@ -90,90 +90,9 @@
     </div>
     <footer>© 2025年免费在线工具。版权所有。</footer>
 
-    <!-- 内置轻量二维码生成库，无外部依赖 -->
+    <!-- 标准二维码生成库，可正常扫码识别 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
-        // 轻量二维码生成器（纯JS实现，无外部依赖）
-        class QRCode {
-            constructor(text, options = {}) {
-                this.text = text;
-                this.options = {
-                    width: options.width || 200,
-                    height: options.height || 200,
-                    color: {
-                        dark: options.color?.dark || '#000000',
-                        light: options.color?.light || '#ffffff'
-                    }
-                };
-            }
-
-            async toCanvas(canvasEl) {
-                // 使用浏览器原生的 QRCode API 作为首选方案
-                if (window.QRCode) {
-                    return this._nativeGenerate(canvasEl);
-                }
-                // 备用方案：使用 Canvas 绘制静态二维码（基础实现）
-                return this._simpleGenerate(canvasEl);
-            }
-
-            async _nativeGenerate(canvasEl) {
-                return new Promise((resolve, reject) => {
-                    try {
-                        const qr = new QRCode(canvasEl, {
-                            text: this.text,
-                            width: this.options.width,
-                            height: this.options.height,
-                            colorDark: this.options.color.dark,
-                            colorLight: this.options.color.light,
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
-                        resolve(qr);
-                    } catch (e) {
-                        reject(e);
-                    }
-                });
-            }
-
-            async _simpleGenerate(canvasEl) {
-                const canvas = canvasEl;
-                const ctx = canvas.getContext('2d');
-                const size = this.options.width;
-                canvas.width = size;
-                canvas.height = size;
-
-                // 生成简单的占位二维码（实际场景可替换为完整算法，这里保证页面可运行）
-                ctx.fillStyle = this.options.color.light;
-                ctx.fillRect(0, 0, size, size);
-
-                const cellSize = size / 25;
-                ctx.fillStyle = this.options.color.dark;
-                
-                // 绘制三个定位方块
-                const positions = [
-                    { x: 0, y: 0 },
-                    { x: size - 7 * cellSize, y: 0 },
-                    { x: 0, y: size - 7 * cellSize }
-                ];
-
-                positions.forEach(pos => {
-                    ctx.fillRect(pos.x, pos.y, 7 * cellSize, 7 * cellSize);
-                    ctx.fillStyle = this.options.color.light;
-                    ctx.fillRect(pos.x + cellSize, pos.y + cellSize, 5 * cellSize, 5 * cellSize);
-                    ctx.fillStyle = this.options.color.dark;
-                    ctx.fillRect(pos.x + 2 * cellSize, pos.y + 2 * cellSize, 3 * cellSize, 3 * cellSize);
-                });
-
-                // 填充随机模块（模拟二维码）
-                const random = new Array(Math.ceil(this.text.length / 10));
-                for (let i = 0; i < random.length; i++) {
-                    const x = Math.floor(Math.random() * 23 + 1) * cellSize;
-                    const y = Math.floor(Math.random() * 23 + 1) * cellSize;
-                    ctx.fillRect(x, y, cellSize, cellSize);
-                }
-
-                return canvas;
-            }
-        }
-
         async function generateQR() {
             const text = document.getElementById('content').value.trim();
             const qrBox = document.getElementById('qrcode');
@@ -195,18 +114,21 @@
                 const canvas = document.createElement('canvas');
                 qrBox.appendChild(canvas);
 
-                const qr = new QRCode(text, {
+                // 生成标准可识别的二维码
+                await QRCode.toCanvas(canvas, text, {
                     width: 200,
-                    height: 200
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#ffffff'
+                    }
                 });
-
-                await qr.toCanvas(canvas);
 
                 downloadBtn.href = canvas.toDataURL('image/png');
                 downloadBtn.style.display = 'block';
             } catch (error) {
                 console.error('生成失败:', error);
-                alert('生成失败，请检查输入内容或刷新页面重试');
+                alert('生成失败，请检查网络或稍后重试');
             } finally {
                 btn.disabled = false;
                 btn.textContent = '生成二维码';
