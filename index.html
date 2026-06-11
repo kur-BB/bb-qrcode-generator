@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free QR Code Generator | Online Tool</title>
+    <meta name="description" content="Free online QR code generator. Create and download QR codes quickly for URL, text and more.">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10 px-4">
+    <div class="w-full max-w-xl bg-white rounded-xl shadow-md p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Free QR Code Generator</h1>
+        
+        <!-- 输入区域 -->
+        <input 
+            type="text" 
+            id="content" 
+            placeholder="Enter URL or text..."
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+
+        <!-- 按钮 -->
+        <button 
+            onclick="generateQR()"
+            class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+        >
+            Generate QR Code
+        </button>
+
+        <!-- 二维码展示区 -->
+        <div id="qrcode" class="flex justify-center mt-6"></div>
+
+        <!-- 下载按钮 -->
+        <a 
+            id="downloadBtn" 
+            href="" 
+            download="qrcode.png"
+            class="hidden block text-center mt-4 text-blue-500 hover:underline"
+        >
+            Download QR Code
+        </a>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="mt-8 text-gray-500 text-sm text-center">
+        © 2025 Free Online Tools. All rights reserved.
+    </footer>
+
+    <script>
+        function generateQR() {
+            const text = document.getElementById('content').value;
+            const qrBox = document.getElementById('qrcode');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            // 清空旧二维码
+            qrBox.innerHTML = '';
+            downloadBtn.classList.add('hidden');
+
+            if(!text) return alert('Please enter content first');
+
+            // 生成二维码
+            QRCode.toCanvas(qrBox, text, { width: 200 }, function (error) {
+                if (error) console.error(error)
+                // 生成下载链接
+                const canvas = qrBox.querySelector('canvas');
+                downloadBtn.href = canvas.toDataURL("image/png");
+                downloadBtn.classList.remove('hidden');
+            })
+        }
+    </script>
+</body>
+</html>
